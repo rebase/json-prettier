@@ -21,34 +21,41 @@ body {
   height: 100vh;
   padding: 0;
   margin: 0;
-
   overflow: hidden;
 }
 
 .input,
 .output {
-  flex: 1;
-
+  flex-basis: 50%;
+  flex-grow: 0;
+  flex-shrink: 0;
   height: 100%;
-  padding: 15px;
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 16px;
-  line-height: 1.5;
-  border: none;
-  resize: none;
-
-  outline: none;
+  overflow: hidden;
 }
 
-.input {
-  border-right: 1px solid #ccc;
-  background-color: #f8f8f8;
+.editor-wrapper {
+  height: 100%;
+  display: flex;
 }
 
-.output {
-  background-color: #f0f0f0;
+.editor-wrapper > div,
+.editor-wrapper .monaco-editor {
+  width: 100% !important;
+  height: 100% !important;
 }
 
-.output.error {
-  color: red;
+.output.error .monaco-editor .view-lines span {
+  color: red !important;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .input,
+  .output {
+    flex-basis: 50%;
+    width: 100%;
+  }
 }
