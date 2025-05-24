@@ -48,3 +48,7 @@ body {
 .output {
   background-color: #f0f0f0;
 }
+
+.output.error {
+  color: red;
+}
