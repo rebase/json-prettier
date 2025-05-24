@@ -3,29 +3,33 @@ import {useState} from 'react';
 import './App.css';
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState('');
-  const [name, setName] = useState('');
+  const [formattedString, setFormattedString] = useState('');
 
-  async function greet() {
-    setGreetMsg(await invoke('greet', {name}));
-  }
+  const formatString = async (string: string) => {
+    if (string.trim() === '') {
+      setFormattedString('');
+      return;
+    }
+    try {
+      setFormattedString(await invoke('format_json_string', {jsonString: string}));
+    } catch (error) {
+      setFormattedString(error as string);
+    }
+  };
 
   return (
     <main className="container">
-      <form
-        className="row"
-        onSubmit={e => {
-          e.preventDefault();
-          greet();
-        }}>
-        <input
-          id="greet-input"
-          onChange={e => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
+      <textarea
+        className="input"
+        placeholder="Put your JSON string here"
+        onChange={e => formatString(e.target.value)}
+      />
+      <textarea
+        className="output"
+        placeholder="Formatted JSON string will appear here"
+        value={formattedString}
+        readOnly
+      />
     </main>
   );
 }
