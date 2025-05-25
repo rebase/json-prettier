@@ -38,7 +38,7 @@ function App() {
   const [fontSize, setFontSize] = useState(14);
   const [theme, setTheme] = useState('vs-light');
   const [indentType, setIndentType] = useState<'space' | 'tab'>('space');
-  const [indentWidth, setIndentWidth] = useState(2);
+  const [indentWidth, setIndentWidth] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const formatString = async (
