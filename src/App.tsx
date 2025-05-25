@@ -4,24 +4,28 @@ import { Settings } from 'lucide-react';
 import { ChangeEvent, useEffect, useState } from 'react';
 import './App.css';
 
+const darkThemes = ['vs-dark', 'hc-black'];
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  theme: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, theme }) => {
   if (!isOpen) return null;
+  const isDarkTheme = darkThemes.includes(theme);
 
   return (
     <div
-      className="modal-overlay"
+      className={`modal-overlay ${isDarkTheme ? 'dark-theme' : ''}`}
       onClick={onClose}>
       <div
-        className="modal-content"
+        className={`modal-content ${isDarkTheme ? 'dark-theme' : ''}`}
         onClick={e => e.stopPropagation()}>
         <button
-          className="modal-close-button"
+          className={`modal-close-button ${isDarkTheme ? 'dark-theme' : ''}`}
           onClick={onClose}>
           &times;
         </button>
@@ -116,9 +120,11 @@ function App() {
     };
   }, []);
 
+  const isDarkTheme = darkThemes.includes(theme);
+
   return (
-    <main className="app-layout">
-      <div className="top-bar">
+    <main className={`app-layout ${isDarkTheme ? 'dark-theme' : ''}`}>
+      <div className={`top-bar ${isDarkTheme ? 'dark-theme' : ''}`}>
         <button
           onClick={openModal}
           className="settings-button"
@@ -129,7 +135,8 @@ function App() {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={closeModal}>
+        onClose={closeModal}
+        theme={theme}>
         <div className="modal-settings-content">
           <h2>Editor Settings</h2>
           <div className="setting-item">

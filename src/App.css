@@ -206,3 +206,77 @@ body {
     border-bottom: 1px solid #eee;
   }
 }
+
+.app-layout.dark-theme {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.top-bar.dark-theme {
+  background-color: #333333;
+  border-bottom: 1px solid #444444;
+}
+
+.top-bar.dark-theme .settings-button {
+  color: #d4d4d4;
+}
+
+.top-bar.dark-theme .settings-button:hover {
+  background-color: #555555;
+}
+
+.modal-overlay.dark-theme {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content.dark-theme {
+  background-color: #252526;
+  color: #cccccc;
+  border: 1px solid #373737;
+}
+
+.modal-close-button.dark-theme {
+  color: #cccccc;
+}
+
+.modal-close-button.dark-theme:hover {
+  color: #ffffff;
+}
+
+.modal-content.dark-theme .modal-settings-content h2 {
+  color: #ffffff;
+}
+
+.modal-content.dark-theme .setting-item label {
+  color: #cccccc;
+}
+
+.modal-content.dark-theme .setting-item select,
+.modal-content.dark-theme .setting-item input {
+  background-color: #3c3c3c;
+  color: #cccccc;
+  border: 1px solid #555555;
+}
+
+.modal-settings-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+
+  color: #333;
+}
+
+.setting-item label {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+
+  color: #555;
+}
+
+.setting-item select,
+.setting-item input {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
