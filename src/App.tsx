@@ -6,6 +6,18 @@ import './App.css';
 
 const darkThemes = ['vs-dark', 'hc-black'];
 
+interface AppSettings {
+  indent_type: string;
+  indent_width: number;
+  theme: string;
+  font_size: number;
+}
+
+interface AppData {
+  last_json_input: string;
+  settings: AppSettings;
+}
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -44,6 +56,55 @@ function App() {
   const [indentType, setIndentType] = useState<'space' | 'tab'>('space');
   const [indentWidth, setIndentWidth] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const appData = (await invoke('load_app_data')) as AppData;
+
+        setFontSize(appData.settings.font_size);
+        setTheme(appData.settings.theme);
+        setIndentType(appData.settings.indent_type as 'space' | 'tab');
+        setIndentWidth(appData.settings.indent_width);
+
+        setInputString(appData.last_json_input);
+
+        if (appData.last_json_input.trim() !== '') {
+          formatString(appData.last_json_input, {
+            indentType: appData.settings.indent_type as 'space' | 'tab',
+            indentWidth: appData.settings.indent_width,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        await invoke('save_app_data', {
+          data: {
+            last_json_input: inputString,
+            settings: {
+              indent_type: indentType,
+              indent_width: indentWidth,
+              theme: theme,
+              font_size: fontSize,
+            },
+          },
+        });
+      } catch (error) {
+        console.error('Failed to save data:', error);
+      }
+    };
+
+    const timeoutId = setTimeout(saveData, 500);
+    return () => clearTimeout(timeoutId);
+  }, [inputString, fontSize, theme, indentType, indentWidth]);
 
   const formatString = async (
     textValue?: string,
@@ -204,7 +265,6 @@ function App() {
               wordWrap: 'on',
               automaticLayout: true,
               scrollBeyondLastLine: false,
-              lineNumbersMinChars: 2,
               scrollbar: {
                 vertical: 'auto',
                 horizontal: 'auto',
@@ -228,7 +288,6 @@ function App() {
               wordWrap: 'on',
               automaticLayout: true,
               scrollBeyondLastLine: false,
-              lineNumbersMinChars: 3,
               scrollbar: {
                 vertical: 'auto',
                 horizontal: 'auto',

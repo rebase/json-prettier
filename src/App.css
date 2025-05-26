@@ -257,26 +257,3 @@ body {
   color: #cccccc;
   border: 1px solid #555555;
 }
-
-.modal-settings-content h2 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 1.2rem;
-
-  color: #333;
-}
-
-.setting-item label {
-  margin-bottom: 5px;
-  font-size: 0.9rem;
-
-  color: #555;
-}
-
-.setting-item select,
-.setting-item input {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 0.9rem;
-}

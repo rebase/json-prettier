@@ -1,8 +1,43 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json;
 use serde_json::ser::{PrettyFormatter, Serializer};
+use tauri_plugin_store::StoreExt;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AppSettings {
+    pub indent_type: String,
+    pub indent_width: usize,
+    pub theme: String,
+    pub font_size: u32,
+}
+
+impl Default for AppSettings {
+    fn default() -> Self {
+        Self {
+            indent_type: "space".to_string(),
+            indent_width: 2,
+            theme: "vs-dark".to_string(),
+            font_size: 14,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AppData {
+    pub last_json_input: String,
+    pub settings: AppSettings,
+}
+
+impl Default for AppData {
+    fn default() -> Self {
+        Self {
+            last_json_input: String::new(),
+            settings: AppSettings::default(),
+        }
+    }
+}
 
 #[tauri::command]
 fn format_json_string(
@@ -30,11 +65,45 @@ fn format_json_string(
     Ok(String::from_utf8(buf).map_err(|e| format!("Failed to convert to UTF-8: {}", e))?)
 }
 
+#[tauri::command]
+async fn save_app_data(app: tauri::AppHandle, data: AppData) -> Result<(), String> {
+    let store = app
+        .store_builder("app_data.json")
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    store.set(
+        "app_data",
+        serde_json::to_value(data).map_err(|e| e.to_string())?,
+    );
+
+    store.save().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+async fn load_app_data(app: tauri::AppHandle) -> Result<AppData, String> {
+    let store = app
+        .store_builder("app_data.json")
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    match store.get("app_data") {
+        Some(value) => serde_json::from_value(value.clone()).map_err(|e| e.to_string()),
+        None => Ok(AppData::default()),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![format_json_string])
+        .plugin(tauri_plugin_store::Builder::default().build())
+        .invoke_handler(tauri::generate_handler![
+            format_json_string,
+            save_app_data,
+            load_app_data
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
