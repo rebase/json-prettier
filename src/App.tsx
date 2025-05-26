@@ -1,7 +1,7 @@
 import Editor, { OnChange } from '@monaco-editor/react';
 import { invoke } from '@tauri-apps/api/core';
-import { Settings } from 'lucide-react';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { Check, Copy, Redo2, Settings, Undo2 } from 'lucide-react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const darkThemes = ['vs-dark', 'hc-black'];
@@ -56,6 +56,10 @@ function App() {
   const [indentType, setIndentType] = useState<'space' | 'tab'>('space');
   const [indentWidth, setIndentWidth] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+  const editorRef = useRef<any>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -164,10 +168,49 @@ function App() {
   const handleEditorChange: OnChange = value => {
     setInputString(value || '');
     formatString(value, { indentType: indentType, indentWidth: indentWidth });
+    setTimeout(updateUndoRedoState, 100);
   };
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(formattedString);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
+  const updateUndoRedoState = () => {
+    if (editorRef.current) {
+      const model = editorRef.current.getModel();
+      if (model) {
+        setCanUndo(model.canUndo());
+        setCanRedo(model.canRedo());
+      }
+    }
+  };
+
+  const handleUndo = () => {
+    console.log('Undo button clicked', editorRef.current);
+    if (editorRef.current && canUndo) {
+      editorRef.current.focus();
+      editorRef.current.trigger('undo', 'undo', null);
+      setTimeout(updateUndoRedoState, 100);
+    }
+  };
+
+  const handleRedo = () => {
+    console.log('Redo button clicked', editorRef.current);
+    if (editorRef.current && canRedo) {
+      editorRef.current.focus();
+      editorRef.current.trigger('redo', 'redo', null);
+      setTimeout(updateUndoRedoState, 100);
+    }
+  };
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -185,20 +228,128 @@ function App() {
 
   return (
     <main className={`app-layout ${isDarkTheme ? 'dark-theme' : ''}`}>
-      <div className={`top-bar ${isDarkTheme ? 'dark-theme' : ''}`}>
-        <button
-          onClick={openModal}
-          className="settings-button"
-          title="Settings">
-          <Settings size={20} />
-        </button>
+      <div className="main-container">
+        <div className={`sidebar ${isDarkTheme ? 'dark-theme' : ''}`}>
+          <button
+            onClick={openModal}
+            className={`settings-button ${isDarkTheme ? 'dark-theme' : ''}`}
+            style={{ fontSize: `${fontSize}px` }}
+            title="Settings">
+            <Settings size={Math.max(16, fontSize * 1.5)} />
+          </button>
+        </div>
+
+        <div className="content-area">
+          <div className="container">
+            <div className="editor-section">
+              <div
+                className={`editor-header ${isDarkTheme ? 'dark-theme' : ''}`}
+                style={{ fontSize: `${fontSize}px` }}>
+                <div className="editor-actions">
+                  <button
+                    onClick={handleUndo}
+                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
+                    style={{ fontSize: `${fontSize}px` }}
+                    title="Undo"
+                    disabled={!canUndo}>
+                    <Undo2 size={Math.max(12, fontSize * 0.8)} />
+                  </button>
+                  <button
+                    onClick={handleRedo}
+                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
+                    style={{ fontSize: `${fontSize}px` }}
+                    title="Redo"
+                    disabled={!canRedo}>
+                    <Redo2 size={Math.max(12, fontSize * 0.8)} />
+                  </button>
+                </div>
+              </div>
+              <div className={`input ${inputString === '' ? 'empty' : ''}`}>
+                <Editor
+                  height="100%"
+                  defaultLanguage="json"
+                  theme={theme}
+                  value={inputString}
+                  onChange={handleEditorChange}
+                  onMount={editor => {
+                    editorRef.current = editor;
+                    updateUndoRedoState();
+                    // Listen for model content changes to update undo/redo state
+                    editor.onDidChangeModelContent(() => {
+                      setTimeout(updateUndoRedoState, 50);
+                    });
+                  }}
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: fontSize,
+                    wordWrap: 'on',
+                    automaticLayout: true,
+                    scrollBeyondLastLine: false,
+                    scrollbar: {
+                      vertical: 'auto',
+                      horizontal: 'auto',
+                      arrowSize: 0,
+                      useShadows: false,
+                    },
+                    renderLineHighlight: 'none',
+                  }}
+                />
+              </div>
+            </div>
+            <div className="editor-section">
+              <div
+                className={`editor-header ${isDarkTheme ? 'dark-theme' : ''}`}
+                style={{ fontSize: `${fontSize}px` }}>
+                <button
+                  onClick={handleCopy}
+                  className={`copy-button ${isCopied ? 'copied' : ''} ${
+                    isDarkTheme ? 'dark-theme' : ''
+                  }`}
+                  style={{ fontSize: `${fontSize}px` }}
+                  title={isCopied ? 'Copied!' : 'Copy to Clipboard'}
+                  disabled={formattedString === ''}>
+                  {isCopied ? (
+                    <Check size={Math.max(12, fontSize * 0.8)} />
+                  ) : (
+                    <Copy size={Math.max(12, fontSize * 0.8)} />
+                  )}
+                </button>
+              </div>
+              <div className={`output ${isError ? 'error' : ''}`}>
+                <Editor
+                  height="100%"
+                  defaultLanguage="json"
+                  theme={theme}
+                  value={formattedString}
+                  options={{
+                    readOnly: true,
+                    minimap: { enabled: false },
+                    fontSize: fontSize,
+                    wordWrap: 'on',
+                    automaticLayout: true,
+                    scrollBeyondLastLine: false,
+                    scrollbar: {
+                      vertical: 'auto',
+                      horizontal: 'auto',
+                      arrowSize: 0,
+                      useShadows: false,
+                    },
+                    renderLineHighlight: 'none',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         theme={theme}>
-        <div className="modal-settings-content">
+        <div
+          className="modal-settings-content"
+          style={{ fontSize: `${fontSize}px` }}>
           <h2>Editor Settings</h2>
           <div className="setting-item">
             <label htmlFor="font-size-select">Font Size</label>
@@ -250,55 +401,6 @@ function App() {
           )}
         </div>
       </Modal>
-
-      <div className="container">
-        <div className={`input editor-wrapper ${inputString === '' ? 'empty' : ''}`}>
-          <Editor
-            height="100%"
-            defaultLanguage="json"
-            theme={theme}
-            value={inputString}
-            onChange={handleEditorChange}
-            options={{
-              minimap: { enabled: false },
-              fontSize: fontSize,
-              wordWrap: 'on',
-              automaticLayout: true,
-              scrollBeyondLastLine: false,
-              scrollbar: {
-                vertical: 'auto',
-                horizontal: 'auto',
-                arrowSize: 0,
-                useShadows: false,
-              },
-              renderLineHighlight: 'none',
-            }}
-          />
-        </div>
-        <div className={`output editor-wrapper ${isError ? 'error' : ''}`}>
-          <Editor
-            height="100%"
-            defaultLanguage="json"
-            theme={theme}
-            value={formattedString}
-            options={{
-              readOnly: true,
-              minimap: { enabled: false },
-              fontSize: fontSize,
-              wordWrap: 'on',
-              automaticLayout: true,
-              scrollBeyondLastLine: false,
-              scrollbar: {
-                vertical: 'auto',
-                horizontal: 'auto',
-                arrowSize: 0,
-                useShadows: false,
-              },
-              renderLineHighlight: 'none',
-            }}
-          />
-        </div>
-      </div>
     </main>
   );
 }
