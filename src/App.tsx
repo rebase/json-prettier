@@ -1,6 +1,7 @@
 import Editor, { OnChange } from '@monaco-editor/react';
 import { invoke } from '@tauri-apps/api/core';
-import { Check, Copy, Redo2, Settings, Undo2 } from 'lucide-react';
+import { openUrl } from '@tauri-apps/plugin-opener';
+import { Bug, Check, Copy, Github, Info, Redo2, Settings, Undo2 } from 'lucide-react';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import './App.css';
 
@@ -56,6 +57,7 @@ function App() {
   const [indentType, setIndentType] = useState<'space' | 'tab'>('space');
   const [indentWidth, setIndentWidth] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -153,11 +155,7 @@ function App() {
     formatString(inputString, { indentType: newIndentType, indentWidth });
   };
 
-  const handleIndentWidthChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (Number(event.target.value) < 1 || Number(event.target.value) > 8) {
-      return;
-    }
-
+  const handleIndentWidthChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const newWidth = Number(event.target.value);
     setIndentWidth(newWidth);
     if (indentType === 'space') {
@@ -173,6 +171,9 @@ function App() {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const openAboutModal = () => setIsAboutModalOpen(true);
+  const closeAboutModal = () => setIsAboutModalOpen(false);
 
   const handleCopy = async () => {
     try {
@@ -195,7 +196,6 @@ function App() {
   };
 
   const handleUndo = () => {
-    console.log('Undo button clicked', editorRef.current);
     if (editorRef.current && canUndo) {
       editorRef.current.focus();
       editorRef.current.trigger('undo', 'undo', null);
@@ -204,7 +204,6 @@ function App() {
   };
 
   const handleRedo = () => {
-    console.log('Redo button clicked', editorRef.current);
     if (editorRef.current && canRedo) {
       editorRef.current.focus();
       editorRef.current.trigger('redo', 'redo', null);
@@ -215,14 +214,18 @@ function App() {
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        closeModal();
+        if (isAboutModalOpen) {
+          closeAboutModal();
+        } else if (isModalOpen) {
+          closeModal();
+        }
       }
     };
     window.addEventListener('keydown', handleEsc);
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
-  }, []);
+  }, [isModalOpen, isAboutModalOpen]);
 
   const isDarkTheme = darkThemes.includes(theme);
 
@@ -230,6 +233,13 @@ function App() {
     <main className={`app-layout ${isDarkTheme ? 'dark-theme' : ''}`}>
       <div className="main-container">
         <div className={`sidebar ${isDarkTheme ? 'dark-theme' : ''}`}>
+          <button
+            onClick={openAboutModal}
+            className={`settings-button ${isDarkTheme ? 'dark-theme' : ''}`}
+            style={{ fontSize: `${fontSize}px` }}
+            title="About">
+            <Info size={Math.max(16, fontSize * 1.5)} />
+          </button>
           <button
             onClick={openModal}
             className={`settings-button ${isDarkTheme ? 'dark-theme' : ''}`}
@@ -274,7 +284,6 @@ function App() {
                   onMount={editor => {
                     editorRef.current = editor;
                     updateUndoRedoState();
-                    // Listen for model content changes to update undo/redo state
                     editor.onDidChangeModelContent(() => {
                       setTimeout(updateUndoRedoState, 50);
                     });
@@ -344,6 +353,49 @@ function App() {
       </div>
 
       <Modal
+        isOpen={isAboutModalOpen}
+        onClose={closeAboutModal}
+        theme={theme}>
+        <div
+          className="modal-settings-content"
+          style={{ fontSize: `${fontSize}px` }}>
+          <div className="about-content">
+            <div className="app-info">
+              <h3>JSON Prettier</h3>
+              <p className="version">Version 0.1.0</p>
+              <p className="description">
+                A simple tool to clean up and format your JSON data. Transform messy, tangled JSON
+                into beautifully organized and readable format with your preferred styling options.
+              </p>
+            </div>
+
+            <div className="usage-tips">
+              <h4>How to Use</h4>
+              <p>
+                Simply paste your JSON data in the left panel and see the formatted result on the
+                right. Customize font size and theme in the settings to match your preferences.
+              </p>
+            </div>
+
+            <div className="action-buttons">
+              <button
+                className="action-link-button github-button"
+                onClick={() => openUrl('https://github.com/rebase/json-prettier')}
+                title="View on GitHub">
+                <Github size={16} />
+              </button>
+              <button
+                className="action-link-button bug-button"
+                onClick={() => openUrl('https://github.com/rebase/json-prettier/issues')}
+                title="Report Bug">
+                <Bug size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         theme={theme}>
@@ -390,13 +442,19 @@ function App() {
           </div>
           {indentType === 'space' && (
             <div className="setting-item">
-              <label htmlFor="indent-width-input">Indent Width</label>
-              <input
-                type="number"
-                id="indent-width-input"
+              <label htmlFor="indent-width-select">Indent Width</label>
+              <select
+                id="indent-width-select"
                 value={indentWidth}
-                onChange={handleIndentWidthChange}
-              />
+                onChange={handleIndentWidthChange}>
+                {[1, 2, 3, 4, 6, 8].map(width => (
+                  <option
+                    key={width}
+                    value={width}>
+                    {width} {width === 1 ? 'space' : 'spaces'}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
         </div>

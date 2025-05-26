@@ -40,6 +40,7 @@ body {
   min-width: 2.6em;
   width: auto;
   flex-shrink: 0;
+  gap: 0.25em;
 }
 
 .sidebar.dark-theme {
@@ -152,10 +153,6 @@ body {
   border-color: #2d3748;
 }
 
-.editor-title {
-  font-weight: 500;
-}
-
 .copy-button {
   display: flex;
   align-items: center;
@@ -249,7 +246,6 @@ body {
 }
 
 .settings-button:hover {
-  background-color: #e9ecef;
   color: #212529;
 }
 
@@ -263,7 +259,6 @@ body {
 }
 
 .settings-button.dark-theme:hover {
-  background-color: #4a5568;
   color: #ffffff;
 }
 
@@ -380,22 +375,7 @@ body {
   }
 
   .sidebar {
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0.4em 0.3em;
-    background-color: #f8f9fa;
-    border-right: 1px solid #dee2e6;
-    border-bottom: 1px solid #dee2e6;
-    min-width: 2.6em;
-    width: auto;
-    flex-shrink: 0;
-  }
-
-  .sidebar.dark-theme {
-    background-color: #2d3748;
-    border-right-color: #4a5568;
-    border-bottom-color: #4a5568;
+    gap: 0.5em;
   }
 
   .container {
@@ -455,4 +435,151 @@ body {
   background-color: #3c3c3c;
   color: #cccccc;
   border: 1px solid #555555;
+}
+
+.about-content {
+  text-align: left;
+}
+
+.about-content h3 {
+  margin-top: 0;
+  margin-bottom: 0.25em;
+  font-size: 1.5em;
+  color: #2d3748;
+  font-weight: 700;
+}
+
+.about-content .version {
+  margin: 0 0 1em 0;
+  font-size: 0.875em;
+  color: #718096;
+  font-weight: 500;
+}
+
+.about-content .description {
+  margin-bottom: 1.5em;
+  line-height: 1.6;
+  color: #4a5568;
+}
+
+.about-content h4 {
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  font-size: 1em;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.about-content .usage-tips p {
+  margin: 0;
+  line-height: 1.6;
+  color: #4a5568;
+}
+
+.modal-content.dark-theme .about-content h3 {
+  color: #ffffff;
+}
+
+.modal-content.dark-theme .about-content h4 {
+  color: #e2e8f0;
+}
+
+.modal-content.dark-theme .about-content .version {
+  color: #a0aec0;
+}
+
+.modal-content.dark-theme .about-content .description,
+.modal-content.dark-theme .about-content .usage-tips p {
+  color: #cbd5e0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75em;
+  margin-top: 1.5em;
+  justify-content: center;
+}
+
+.action-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75em;
+  border: 1px solid #cbd5e0;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #4a5568;
+  font-size: 0.875em;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  width: 3em;
+  height: 3em;
+}
+
+.action-link-button:hover {
+  background-color: #f7fafc;
+  border-color: #a0aec0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.github-button {
+  background-color: #24292e;
+  color: #ffffff;
+  border-color: #24292e;
+}
+
+.github-button:hover {
+  background-color: #1b1f23;
+  border-color: #1b1f23;
+  color: #ffffff;
+}
+
+.bug-button {
+  background-color: #dc3545;
+  color: #ffffff;
+  border-color: #dc3545;
+}
+
+.bug-button:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+  color: #ffffff;
+}
+
+.modal-content.dark-theme .action-link-button {
+  background-color: #4a5568;
+  color: #e2e8f0;
+  border-color: #2d3748;
+}
+
+.modal-content.dark-theme .action-link-button:hover {
+  background-color: #2d3748;
+  border-color: #1a202c;
+}
+
+.modal-content.dark-theme .github-button {
+  background-color: #24292e;
+  color: #ffffff;
+  border-color: #24292e;
+}
+
+.modal-content.dark-theme .github-button:hover {
+  background-color: #1b1f23;
+  border-color: #1b1f23;
+  color: #ffffff;
+}
+
+.modal-content.dark-theme .bug-button {
+  background-color: #dc3545;
+  color: #ffffff;
+  border-color: #dc3545;
+}
+
+.modal-content.dark-theme .bug-button:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+  color: #ffffff;
 }
