@@ -1,11 +1,12 @@
 import Editor, { OnChange } from '@monaco-editor/react';
 import { invoke } from '@tauri-apps/api/core';
-import { open } from '@tauri-apps/plugin-dialog';
+import { open, save } from '@tauri-apps/plugin-dialog';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import {
   Bug,
   Check,
   Copy,
+  Download,
   Eraser,
   FolderOpen,
   Github,
@@ -197,6 +198,42 @@ function App() {
     }
   };
 
+  const handleDownload = async () => {
+    if (!formattedString || isError) {
+      return;
+    }
+
+    try {
+      const now = new Date();
+      const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-');
+      const defaultFilename = `formatted-json-${timestamp}.json`;
+
+      const filePath = await save({
+        title: 'Save JSON File',
+        defaultPath: defaultFilename,
+        filters: [
+          {
+            name: 'JSON Files',
+            extensions: ['json'],
+          },
+          {
+            name: 'All Files',
+            extensions: ['*'],
+          },
+        ],
+      });
+
+      if (filePath) {
+        await invoke('write_file', {
+          path: filePath,
+          content: formattedString,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to download:', error);
+    }
+  };
+
   const updateUndoRedoState = () => {
     if (editorRef.current) {
       const model = editorRef.current.getModel();
@@ -374,21 +411,32 @@ function App() {
               <div
                 className={`editor-header ${isDarkTheme ? 'dark-theme' : ''}`}
                 style={{ fontSize: `${fontSize}px` }}>
-                <div></div>
-                <button
-                  onClick={handleCopy}
-                  className={`copy-button ${isCopied ? 'copied' : ''} ${
-                    isDarkTheme ? 'dark-theme' : ''
-                  }`}
-                  style={{ fontSize: `${fontSize}px` }}
-                  title={isCopied ? 'Copied!' : 'Copy to Clipboard'}
-                  disabled={formattedString === ''}>
-                  {isCopied ? (
-                    <Check size={Math.max(12, fontSize * 0.8)} />
-                  ) : (
-                    <Copy size={Math.max(12, fontSize * 0.8)} />
-                  )}
-                </button>
+                <div className="editor-actions-left">
+                  <button
+                    onClick={handleCopy}
+                    className={`copy-button ${isCopied ? 'copied' : ''} ${
+                      isDarkTheme ? 'dark-theme' : ''
+                    }`}
+                    style={{ fontSize: `${fontSize}px` }}
+                    title={isCopied ? 'Copied!' : 'Copy to Clipboard'}
+                    disabled={formattedString === ''}>
+                    {isCopied ? (
+                      <Check size={Math.max(12, fontSize * 0.8)} />
+                    ) : (
+                      <Copy size={Math.max(12, fontSize * 0.8)} />
+                    )}
+                  </button>
+                </div>
+                <div className="editor-actions-right">
+                  <button
+                    onClick={handleDownload}
+                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
+                    style={{ fontSize: `${fontSize}px` }}
+                    title="Download JSON"
+                    disabled={formattedString === '' || isError}>
+                    <Download size={Math.max(12, fontSize * 0.8)} />
+                  </button>
+                </div>
               </div>
               <div className={`output ${isError ? 'error' : ''}`}>
                 <Editor

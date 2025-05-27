@@ -99,6 +99,11 @@ async fn read_file(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file '{}': {}", path, e))
 }
 
+#[tauri::command]
+async fn write_file(path: String, content: String) -> Result<(), String> {
+    std::fs::write(&path, content).map_err(|e| format!("Failed to write file '{}': {}", path, e))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -109,7 +114,8 @@ pub fn run() {
             format_json_string,
             save_app_data,
             load_app_data,
-            read_file
+            read_file,
+            write_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
