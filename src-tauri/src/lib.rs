@@ -94,15 +94,22 @@ async fn load_app_data(app: tauri::AppHandle) -> Result<AppData, String> {
     }
 }
 
+#[tauri::command]
+async fn read_file(path: String) -> Result<String, String> {
+    std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file '{}': {}", path, e))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             format_json_string,
             save_app_data,
-            load_app_data
+            load_app_data,
+            read_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,7 +1,19 @@
 import Editor, { OnChange } from '@monaco-editor/react';
 import { invoke } from '@tauri-apps/api/core';
+import { open } from '@tauri-apps/plugin-dialog';
 import { openUrl } from '@tauri-apps/plugin-opener';
-import { Bug, Check, Copy, Github, Info, Redo2, Settings, Undo2 } from 'lucide-react';
+import {
+  Bug,
+  Check,
+  Copy,
+  Eraser,
+  FolderOpen,
+  Github,
+  Info,
+  Redo2,
+  Settings,
+  Undo2,
+} from 'lucide-react';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import './App.css';
 
@@ -211,6 +223,42 @@ function App() {
     }
   };
 
+  const handleClear = () => {
+    setInputString('');
+    setFormattedString('');
+    setIsError(false);
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+  };
+
+  const handleLoadFile = async () => {
+    try {
+      const filePath = await open({
+        title: 'Open JSON File',
+        filters: [
+          {
+            name: 'JSON Files',
+            extensions: ['json'],
+          },
+          {
+            name: 'All Files',
+            extensions: ['*'],
+          },
+        ],
+      });
+
+      if (filePath) {
+        const fileContent = await invoke('read_file', { path: filePath });
+        setInputString(fileContent as string);
+        formatString(fileContent as string, { indentType: indentType, indentWidth: indentWidth });
+        setTimeout(updateUndoRedoState, 100);
+      }
+    } catch (error) {
+      console.error('Failed to load file:', error);
+    }
+  };
+
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -255,7 +303,7 @@ function App() {
               <div
                 className={`editor-header ${isDarkTheme ? 'dark-theme' : ''}`}
                 style={{ fontSize: `${fontSize}px` }}>
-                <div className="editor-actions">
+                <div className="editor-actions-left">
                   <button
                     onClick={handleUndo}
                     className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
@@ -271,6 +319,23 @@ function App() {
                     title="Redo"
                     disabled={!canRedo}>
                     <Redo2 size={Math.max(12, fontSize * 0.8)} />
+                  </button>
+                  <button
+                    onClick={handleClear}
+                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
+                    style={{ fontSize: `${fontSize}px` }}
+                    title="Clear All"
+                    disabled={inputString === ''}>
+                    <Eraser size={Math.max(12, fontSize * 0.8)} />
+                  </button>
+                </div>
+                <div className="editor-actions-right">
+                  <button
+                    onClick={handleLoadFile}
+                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
+                    style={{ fontSize: `${fontSize}px` }}
+                    title="Load JSON File">
+                    <FolderOpen size={Math.max(12, fontSize * 0.8)} />
                   </button>
                 </div>
               </div>
@@ -309,6 +374,7 @@ function App() {
               <div
                 className={`editor-header ${isDarkTheme ? 'dark-theme' : ''}`}
                 style={{ fontSize: `${fontSize}px` }}>
+                <div></div>
                 <button
                   onClick={handleCopy}
                   className={`copy-button ${isCopied ? 'copied' : ''} ${

@@ -74,7 +74,7 @@ body {
 
 .editor-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 0.5em 0.75em;
   background-color: #f8f9fa;
@@ -93,6 +93,16 @@ body {
 }
 
 .editor-actions {
+  display: flex;
+  gap: 0.25em;
+}
+
+.editor-actions-left {
+  display: flex;
+  gap: 0.25em;
+}
+
+.editor-actions-right {
   display: flex;
   gap: 0.25em;
 }
