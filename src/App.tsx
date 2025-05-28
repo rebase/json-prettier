@@ -2,6 +2,7 @@ import Editor, { OnChange } from '@monaco-editor/react';
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { openUrl } from '@tauri-apps/plugin-opener';
+import { check } from '@tauri-apps/plugin-updater';
 import {
   Bug,
   Check,
@@ -249,6 +250,19 @@ function App() {
     };
 
     loadData();
+
+    const checkForUpdates = async () => {
+      try {
+        const update = await check();
+        if (update) {
+          await update.downloadAndInstall();
+        }
+      } catch (error) {
+        console.error('Failed to check for updates:', error);
+      }
+    };
+
+    checkForUpdates();
   }, []);
 
   useEffect(() => {
@@ -337,6 +351,7 @@ function App() {
 
   const openAboutModal = () => setIsAboutModalOpen(true);
   const closeAboutModal = () => setIsAboutModalOpen(false);
+
   const handleResetSettings = async () => {
     try {
       await invoke('reset_app_data');
