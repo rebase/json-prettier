@@ -19,6 +19,17 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const darkThemes = ['vs-dark', 'hc-black'];
+const isDevelopment = import.meta.env.DEV;
+
+const getThemeClass = (
+  baseClass: string,
+  theme: string,
+  additionalClasses: string = '',
+): string => {
+  const isDarkTheme = darkThemes.includes(theme);
+  const darkClass = isDarkTheme ? 'dark-theme' : '';
+  return [baseClass, darkClass, additionalClasses].filter(Boolean).join(' ');
+};
 
 interface AppSettings {
   indent_type: string;
@@ -37,6 +48,7 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   theme: string;
+  isSmallText?: boolean;
 }
 
 interface ConfirmModalProps {
@@ -48,22 +60,20 @@ interface ConfirmModalProps {
   message: string;
   confirmText: string;
   cancelText: string;
-  fontSize: number;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, theme }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, theme, isSmallText }) => {
   if (!isOpen) return null;
-  const isDarkTheme = darkThemes.includes(theme);
 
   return (
     <div
-      className={`modal-overlay ${isDarkTheme ? 'dark-theme' : ''}`}
+      className={getThemeClass('modal-overlay', theme)}
       onClick={onClose}>
       <div
-        className={`modal-content ${isDarkTheme ? 'dark-theme' : ''}`}
+        className={getThemeClass('modal-content', theme, isSmallText ? 'small-text' : '')}
         onClick={e => e.stopPropagation()}>
         <button
-          className={`modal-close-button ${isDarkTheme ? 'dark-theme' : ''}`}
+          className={getThemeClass('modal-close-button', theme)}
           onClick={onClose}>
           &times;
         </button>
@@ -82,28 +92,23 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   message,
   confirmText,
   cancelText,
-  fontSize,
 }) => {
   if (!isOpen) return null;
-  const isDarkTheme = darkThemes.includes(theme);
 
   return (
     <div
-      className={`modal-overlay ${isDarkTheme ? 'dark-theme' : ''}`}
+      className={getThemeClass('modal-overlay', theme)}
       onClick={onClose}
       style={{ zIndex: 1100 }}>
       <div
-        className={`modal-content ${isDarkTheme ? 'dark-theme' : ''}`}
-        onClick={e => e.stopPropagation()}
-        style={{ maxWidth: '25em' }}>
+        className={getThemeClass('modal-content confirm', theme)}
+        onClick={e => e.stopPropagation()}>
         <button
-          className={`modal-close-button ${isDarkTheme ? 'dark-theme' : ''}`}
+          className={getThemeClass('modal-close-button', theme)}
           onClick={onClose}>
           &times;
         </button>
-        <div
-          className="modal-settings-content"
-          style={{ fontSize: `${fontSize}px` }}>
+        <div className="modal-settings-content">
           <h2>{title}</h2>
           <div className="reset-confirmation">
             <p className="reset-confirmation-text">{message}</p>
@@ -125,6 +130,67 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     </div>
   );
 };
+
+const getCommonEditorOptions = (fontSize: number) => ({
+  minimap: { enabled: false },
+  fontSize: fontSize,
+  wordWrap: 'on' as const,
+  automaticLayout: true,
+  scrollBeyondLastLine: false,
+  renderLineHighlight: 'none' as const,
+  lineNumbers: 'off' as const,
+  lineNumbersMinChars: 0,
+  stickyScroll: { enabled: false },
+  hover: { enabled: false },
+  quickSuggestions: false,
+  parameterHints: { enabled: false },
+  suggestOnTriggerCharacters: false,
+  acceptSuggestionOnEnter: 'off' as const,
+  tabCompletion: 'off' as const,
+  wordBasedSuggestions: 'off' as const,
+  occurrencesHighlight: 'off' as const,
+  selectionHighlight: false,
+  find: { addExtraSpaceOnTop: false },
+  unicodeHighlight: { ambiguousCharacters: false },
+  smoothScrolling: false,
+  cursorBlinking: 'solid' as const,
+  disableLayerHinting: true,
+  disableMonospaceOptimizations: false,
+  hideCursorInOverviewRuler: true,
+  links: false,
+  colorDecorators: false,
+  scrollbar: {
+    useShadows: false,
+    verticalHasArrows: false,
+    horizontalHasArrows: false,
+    vertical: 'auto' as const,
+    horizontal: 'auto' as const,
+    verticalScrollbarSize: fontSize * 0.8,
+    horizontalScrollbarSize: fontSize * 0.8,
+  },
+  overviewRulerLanes: 0,
+  overviewRulerBorder: false,
+  glyphMargin: false,
+  renderWhitespace: 'none' as const,
+  renderControlCharacters: false,
+  rulers: [],
+});
+
+const FONT_SIZES = [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24];
+
+const INDENT_WIDTH_OPTIONS = [1, 2, 3, 4, 6, 8];
+
+const DEFAULT_SETTINGS = {
+  fontSize: 14,
+  indentType: 'space' as 'space' | 'tab',
+  indentWidth: 4,
+} as const;
+
+const TIMING = {
+  COPY_RESET_DELAY: 2000,
+  SAVE_DEBOUNCE_DELAY: 500,
+  UNDO_REDO_UPDATE_DELAY: 100,
+} as const;
 
 function App() {
   const [formattedString, setFormattedString] = useState('');
@@ -204,7 +270,7 @@ function App() {
       }
     };
 
-    const timeoutId = setTimeout(saveData, 500);
+    const timeoutId = setTimeout(saveData, TIMING.SAVE_DEBOUNCE_DELAY);
     return () => clearTimeout(timeoutId);
   }, [inputString, fontSize, theme, indentType, indentWidth]);
 
@@ -262,7 +328,8 @@ function App() {
   const handleEditorChange: OnChange = value => {
     setInputString(value || '');
     formatString(value, { indentType: indentType, indentWidth: indentWidth });
-    setTimeout(updateUndoRedoState, 100);
+
+    setTimeout(updateUndoRedoState, TIMING.UNDO_REDO_UPDATE_DELAY);
   };
 
   const openModal = () => setIsModalOpen(true);
@@ -275,14 +342,17 @@ function App() {
       await invoke('reset_app_data');
       const systemTheme = getSystemTheme();
 
-      setFontSize(14);
+      setFontSize(DEFAULT_SETTINGS.fontSize);
       setTheme(systemTheme);
-      setIndentType('space');
-      setIndentWidth(4);
+      setIndentType(DEFAULT_SETTINGS.indentType);
+      setIndentWidth(DEFAULT_SETTINGS.indentWidth);
       setIsError(false);
 
       if (inputString.trim() !== '') {
-        formatString(inputString, { indentType: 'space', indentWidth: 4 });
+        formatString(inputString, {
+          indentType: DEFAULT_SETTINGS.indentType,
+          indentWidth: DEFAULT_SETTINGS.indentWidth,
+        });
       }
 
       setIsResetConfirmOpen(false);
@@ -296,7 +366,7 @@ function App() {
     try {
       await navigator.clipboard.writeText(formattedString);
       setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
+      setTimeout(() => setIsCopied(false), TIMING.COPY_RESET_DELAY);
     } catch (error) {
       console.error('Failed to copy:', error);
     }
@@ -352,7 +422,8 @@ function App() {
     if (editorRef.current && canUndo) {
       editorRef.current.focus();
       editorRef.current.trigger('undo', 'undo', null);
-      setTimeout(updateUndoRedoState, 100);
+
+      setTimeout(updateUndoRedoState, TIMING.UNDO_REDO_UPDATE_DELAY);
     }
   };
 
@@ -360,7 +431,8 @@ function App() {
     if (editorRef.current && canRedo) {
       editorRef.current.focus();
       editorRef.current.trigger('redo', 'redo', null);
-      setTimeout(updateUndoRedoState, 100);
+
+      setTimeout(updateUndoRedoState, TIMING.UNDO_REDO_UPDATE_DELAY);
     }
   };
 
@@ -393,7 +465,8 @@ function App() {
         const fileContent = await invoke('read_file', { path: filePath });
         setInputString(fileContent as string);
         formatString(fileContent as string, { indentType: indentType, indentWidth: indentWidth });
-        setTimeout(updateUndoRedoState, 100);
+
+        setTimeout(updateUndoRedoState, TIMING.UNDO_REDO_UPDATE_DELAY);
       }
     } catch (error) {
       console.error('Failed to load file:', error);
@@ -418,67 +491,119 @@ function App() {
     };
   }, [isModalOpen, isAboutModalOpen, isResetConfirmOpen]);
 
-  const isDarkTheme = darkThemes.includes(theme);
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey) {
+        let newFontSize = fontSize;
+        const currentIndex = FONT_SIZES.indexOf(fontSize);
+
+        if (event.key === '=' || event.key === '+') {
+          event.preventDefault();
+          if (currentIndex < FONT_SIZES.length - 1) {
+            newFontSize = FONT_SIZES[currentIndex + 1];
+          } else {
+            newFontSize = FONT_SIZES[FONT_SIZES.length - 1];
+          }
+        } else if (event.key === '-') {
+          event.preventDefault();
+          if (currentIndex > 0) {
+            newFontSize = FONT_SIZES[currentIndex - 1];
+          } else {
+            newFontSize = FONT_SIZES[0];
+          }
+        } else if (event.shiftKey && event.key.toLowerCase() === 'c') {
+          event.preventDefault();
+          handleCopy();
+        } else if (event.shiftKey && event.key.toLowerCase() === 'x') {
+          event.preventDefault();
+          handleClear();
+        } else if (event.key.toLowerCase() === 'n') {
+          event.preventDefault();
+          handleClear();
+        } else if (event.key.toLowerCase() === 'o') {
+          event.preventDefault();
+          handleLoadFile();
+        } else if (event.key.toLowerCase() === 's') {
+          event.preventDefault();
+          handleDownload();
+        } else if (event.key === ',') {
+          event.preventDefault();
+          if (isModalOpen) {
+            closeModal();
+          } else {
+            openModal();
+          }
+        }
+
+        if (newFontSize !== fontSize) {
+          setFontSize(newFontSize);
+        }
+      } else if (event.key === 'F1') {
+        event.preventDefault();
+        openAboutModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [fontSize, setFontSize]);
 
   return (
-    <main className={`app-layout ${isDarkTheme ? 'dark-theme' : ''}`}>
+    <main
+      className={getThemeClass('app-layout', theme)}
+      style={{ fontSize: `${fontSize}px` }}>
+      {isDevelopment && <div className="dev-mode-badge">DEV MODE</div>}
       <div className="main-container">
-        <div className={`sidebar ${isDarkTheme ? 'dark-theme' : ''}`}>
+        <div className={getThemeClass('sidebar', theme)}>
           <button
             onClick={openAboutModal}
-            className={`settings-button ${isDarkTheme ? 'dark-theme' : ''}`}
-            style={{ fontSize: `${fontSize}px` }}
+            className={getThemeClass('settings-button', theme)}
             title="About">
-            <Info size={Math.max(16, fontSize * 1.5)} />
+            <Info className="icon-lg" />
           </button>
           <button
             onClick={openModal}
-            className={`settings-button ${isDarkTheme ? 'dark-theme' : ''}`}
-            style={{ fontSize: `${fontSize}px` }}
+            className={getThemeClass('settings-button', theme)}
             title="Settings">
-            <Settings size={Math.max(16, fontSize * 1.5)} />
+            <Settings className="icon-lg" />
           </button>
         </div>
 
         <div className="content-area">
           <div className="container">
             <div className="editor-section">
-              <div
-                className={`editor-header ${isDarkTheme ? 'dark-theme' : ''}`}
-                style={{ fontSize: `${fontSize}px` }}>
+              <div className={getThemeClass('editor-header', theme)}>
                 <div className="editor-actions-left">
                   <button
                     onClick={handleUndo}
-                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    className={getThemeClass('action-button', theme)}
                     title="Undo"
                     disabled={!canUndo}>
-                    <Undo2 size={Math.max(12, fontSize * 0.8)} />
+                    <Undo2 className="icon-sm" />
                   </button>
                   <button
                     onClick={handleRedo}
-                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    className={getThemeClass('action-button', theme)}
                     title="Redo"
                     disabled={!canRedo}>
-                    <Redo2 size={Math.max(12, fontSize * 0.8)} />
+                    <Redo2 className="icon-sm" />
                   </button>
                   <button
                     onClick={handleClear}
-                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    className={getThemeClass('action-button', theme)}
                     title="Clear All"
                     disabled={inputString === ''}>
-                    <Eraser size={Math.max(12, fontSize * 0.8)} />
+                    <Eraser className="icon-sm" />
                   </button>
                 </div>
                 <div className="editor-actions-right">
                   <button
                     onClick={handleLoadFile}
-                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    className={getThemeClass('action-button', theme)}
                     title="Load JSON File">
-                    <FolderOpen size={Math.max(12, fontSize * 0.8)} />
+                    <FolderOpen className="icon-sm" />
                   </button>
                 </div>
               </div>
@@ -489,90 +614,40 @@ function App() {
                   theme={theme}
                   value={inputString}
                   onChange={handleEditorChange}
+                  loading=""
                   onMount={editor => {
                     editorRef.current = editor;
                     updateUndoRedoState();
                     editor.onDidChangeModelContent(() => {
-                      setTimeout(updateUndoRedoState, 50);
+                      setTimeout(updateUndoRedoState, TIMING.UNDO_REDO_UPDATE_DELAY);
                     });
                   }}
                   options={{
-                    minimap: { enabled: false },
-                    fontSize: fontSize,
-                    wordWrap: 'on',
-                    automaticLayout: true,
-                    scrollBeyondLastLine: false,
-                    renderLineHighlight: 'none',
-                    lineNumbers: 'off',
-                    lineNumbersMinChars: 0,
+                    ...getCommonEditorOptions(fontSize),
                     folding: false,
                     showFoldingControls: 'never',
-                    hover: { enabled: false },
-                    quickSuggestions: false,
-                    parameterHints: { enabled: false },
-                    suggestOnTriggerCharacters: false,
-                    acceptSuggestionOnEnter: 'off',
-                    tabCompletion: 'off',
-                    wordBasedSuggestions: 'off',
-                    occurrencesHighlight: 'off',
-                    selectionHighlight: false,
-                    find: { addExtraSpaceOnTop: false },
-                    unicodeHighlight: { ambiguousCharacters: false },
-                    smoothScrolling: false,
-                    cursorBlinking: 'solid',
-                    disableLayerHinting: true,
-                    disableMonospaceOptimizations: false,
-                    hideCursorInOverviewRuler: true,
-                    links: false,
-                    colorDecorators: false,
-                    contextmenu: false,
-                    scrollbar: {
-                      useShadows: false,
-                      verticalHasArrows: false,
-                      horizontalHasArrows: false,
-                      vertical: 'auto',
-                      horizontal: 'auto',
-                      verticalScrollbarSize: fontSize * 0.8,
-                      horizontalScrollbarSize: fontSize * 0.8,
-                    },
-                    overviewRulerLanes: 0,
-                    overviewRulerBorder: false,
-                    glyphMargin: false,
-                    renderWhitespace: 'none',
-                    renderControlCharacters: false,
-                    rulers: [],
                   }}
                 />
               </div>
             </div>
             <div className="editor-section">
-              <div
-                className={`editor-header ${isDarkTheme ? 'dark-theme' : ''}`}
-                style={{ fontSize: `${fontSize}px` }}>
+              <div className={getThemeClass('editor-header', theme)}>
                 <div className="editor-actions-left">
                   <button
                     onClick={handleCopy}
-                    className={`copy-button ${isCopied ? 'copied' : ''} ${
-                      isDarkTheme ? 'dark-theme' : ''
-                    }`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    className={getThemeClass('copy-button', theme, isCopied ? 'copied' : '')}
                     title={isCopied ? 'Copied!' : 'Copy to Clipboard'}
                     disabled={formattedString === ''}>
-                    {isCopied ? (
-                      <Check size={Math.max(12, fontSize * 0.8)} />
-                    ) : (
-                      <Copy size={Math.max(12, fontSize * 0.8)} />
-                    )}
+                    {isCopied ? <Check className="icon-sm" /> : <Copy className="icon-sm" />}
                   </button>
                 </div>
                 <div className="editor-actions-right">
                   <button
                     onClick={handleDownload}
-                    className={`action-button ${isDarkTheme ? 'dark-theme' : ''}`}
-                    style={{ fontSize: `${fontSize}px` }}
+                    className={getThemeClass('action-button', theme)}
                     title="Download JSON"
                     disabled={formattedString === '' || isError}>
-                    <Download size={Math.max(12, fontSize * 0.8)} />
+                    <Download className="icon-sm" />
                   </button>
                 </div>
               </div>
@@ -582,53 +657,12 @@ function App() {
                   defaultLanguage="json"
                   theme={theme}
                   value={formattedString}
+                  loading=""
                   options={{
+                    ...getCommonEditorOptions(fontSize),
                     readOnly: true,
-                    minimap: { enabled: false },
-                    fontSize: fontSize,
-                    wordWrap: 'on',
-                    automaticLayout: true,
-                    scrollBeyondLastLine: false,
-                    renderLineHighlight: 'none',
-                    lineNumbers: 'off',
-                    lineNumbersMinChars: 0,
                     folding: true,
                     showFoldingControls: 'mouseover',
-                    stickyScroll: { enabled: false },
-                    hover: { enabled: false },
-                    contextmenu: false,
-                    quickSuggestions: false,
-                    parameterHints: { enabled: false },
-                    suggestOnTriggerCharacters: false,
-                    acceptSuggestionOnEnter: 'off',
-                    tabCompletion: 'off',
-                    wordBasedSuggestions: 'off',
-                    occurrencesHighlight: 'off',
-                    selectionHighlight: false,
-                    find: { addExtraSpaceOnTop: false },
-                    unicodeHighlight: { ambiguousCharacters: false },
-                    smoothScrolling: false,
-                    cursorBlinking: 'solid',
-                    disableLayerHinting: true,
-                    disableMonospaceOptimizations: false,
-                    hideCursorInOverviewRuler: true,
-                    links: false,
-                    colorDecorators: false,
-                    scrollbar: {
-                      useShadows: false,
-                      verticalHasArrows: false,
-                      horizontalHasArrows: false,
-                      vertical: 'auto',
-                      horizontal: 'auto',
-                      verticalScrollbarSize: fontSize * 0.8,
-                      horizontalScrollbarSize: fontSize * 0.8,
-                    },
-                    overviewRulerLanes: 0,
-                    overviewRulerBorder: false,
-                    glyphMargin: false,
-                    renderWhitespace: 'none',
-                    renderControlCharacters: false,
-                    rulers: [],
                   }}
                 />
               </div>
@@ -640,26 +674,101 @@ function App() {
       <Modal
         isOpen={isAboutModalOpen}
         onClose={closeAboutModal}
-        theme={theme}>
-        <div
-          className="modal-settings-content"
-          style={{ fontSize: `${fontSize}px` }}>
+        theme={theme}
+        isSmallText={true}>
+        <div className="modal-settings-content">
           <div className="about-content">
             <div className="app-info">
               <h3>JSON Prettier</h3>
               <p className="version">Version 0.1.0</p>
-              <p className="description">
-                A simple tool to clean up and format your JSON data. Transform messy, tangled JSON
-                into beautifully organized and readable format with your preferred styling options.
+              <p className="description compact">
+                Transform messy JSON into beautifully organized format with customizable styling
+                options.
               </p>
             </div>
 
             <div className="usage-tips">
               <h4>How to Use</h4>
-              <p>
-                Simply paste your JSON data in the left panel and see the formatted result on the
-                right. Customize font size and theme in the settings to match your preferences.
+              <p className="compact">
+                Paste JSON in the left panel to see formatted result on the right. Customize
+                settings as needed.
               </p>
+            </div>
+
+            <div className="keyboard-shortcuts">
+              <h4>Keyboard Shortcuts</h4>
+              <div className="shortcuts-grid">
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">=</span>
+                  </span>
+                  <span className="shortcut-desc">Increase Font Size</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">-</span>
+                  </span>
+                  <span className="shortcut-desc">Decrease Font Size</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">Shift</span>
+                    <span className="shortcut-key">C</span>
+                  </span>
+                  <span className="shortcut-desc">Copy to Clipboard</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">Shift</span>
+                    <span className="shortcut-key">X</span>
+                  </span>
+                  <span className="shortcut-desc">Clear All</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">N</span>
+                  </span>
+                  <span className="shortcut-desc">New Document</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">O</span>
+                  </span>
+                  <span className="shortcut-desc">Open File</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">S</span>
+                  </span>
+                  <span className="shortcut-desc">Save File</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">⌘/Ctrl</span>
+                    <span className="shortcut-key">,</span>
+                  </span>
+                  <span className="shortcut-desc">Open Settings</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">F1</span>
+                  </span>
+                  <span className="shortcut-desc">About</span>
+                </div>
+                <div className="shortcut-item">
+                  <span className="shortcut-keys">
+                    <span className="shortcut-key">Esc</span>
+                  </span>
+                  <span className="shortcut-desc">Close Modal</span>
+                </div>
+              </div>
             </div>
 
             <div className="action-buttons">
@@ -667,13 +776,13 @@ function App() {
                 className="action-link-button github-button"
                 onClick={() => openUrl('https://github.com/rebase/json-prettier')}
                 title="View on GitHub">
-                <Github size={16} />
+                <Github className="icon-lg" />
               </button>
               <button
                 className="action-link-button bug-button"
                 onClick={() => openUrl('https://github.com/rebase/json-prettier/issues')}
                 title="Report Bug">
-                <Bug size={16} />
+                <Bug className="icon-lg" />
               </button>
             </div>
           </div>
@@ -683,10 +792,9 @@ function App() {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        theme={theme}>
-        <div
-          className="modal-settings-content"
-          style={{ fontSize: `${fontSize}px` }}>
+        theme={theme}
+        isSmallText={true}>
+        <div className="modal-settings-content">
           <h2>Settings</h2>
           <div className="setting-item">
             <label htmlFor="font-size-select">Font Size</label>
@@ -694,7 +802,7 @@ function App() {
               id="font-size-select"
               value={fontSize}
               onChange={handleFontSizeChange}>
-              {[10, 12, 14, 16, 18, 20, 24].map(size => (
+              {FONT_SIZES.map(size => (
                 <option
                   key={size}
                   value={size}>
@@ -732,7 +840,7 @@ function App() {
                 id="indent-width-select"
                 value={indentWidth}
                 onChange={handleIndentWidthChange}>
-                {[1, 2, 3, 4, 6, 8].map(width => (
+                {INDENT_WIDTH_OPTIONS.map(width => (
                   <option
                     key={width}
                     value={width}>
@@ -762,7 +870,6 @@ function App() {
         message="This will reset font size, theme, and formatting settings to defaults."
         confirmText="Yes, Reset Settings"
         cancelText="Cancel"
-        fontSize={fontSize}
       />
     </main>
   );

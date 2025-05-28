@@ -1,11 +1,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
-use serde_json;
-use serde_json::ser::{PrettyFormatter, Serializer};
+use serde_json::{
+    self,
+    ser::{PrettyFormatter, Serializer},
+};
 use tauri_plugin_store::StoreExt;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct AppSettings {
     pub indent_type: String,
     pub indent_width: usize,
@@ -24,7 +26,7 @@ impl Default for AppSettings {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct AppData {
     pub last_json_input: String,
     pub settings: AppSettings,

@@ -1,8 +1,8 @@
 [package]
 name = "json-prettier"
 version = "0.1.0"
-description = "JSON Prettier"
-authors = ["you"]
+description = "A simple desktop app that makes messy JSON data look clean and organized"
+authors = ["rebase"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
