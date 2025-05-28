@@ -555,3 +555,78 @@ body {
   border-color: #dc3545;
   color: #ffffff;
 }
+
+.reset-settings-section {
+  margin-top: var(--spacing-xl);
+  margin-bottom: 0;
+  border-top: 1px solid var(--color-border-primary);
+  padding-top: var(--spacing-xl);
+}
+
+.reset-confirmation {
+  text-align: center;
+}
+
+.reset-confirmation-text {
+  margin-bottom: var(--spacing-lg);
+  font-size: 0.875em;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.reset-button-group {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  align-items: center;
+}
+
+.reset-button {
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--spacing-sm);
+  cursor: pointer;
+  font-size: 0.875em;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.reset-button-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.reset-button-danger:hover {
+  background-color: #c82333;
+}
+
+.reset-button-secondary {
+  background-color: var(--color-background-tertiary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-secondary);
+}
+
+.reset-button-secondary:hover {
+  background-color: var(--color-button-hover-bg);
+  border-color: var(--color-button-hover-border);
+}
+
+.reset-button-full {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-xl);
+  margin-bottom: 0;
+}
+
+.dark-theme .reset-button-danger {
+  background-color: #e53e3e;
+}
+
+.dark-theme .reset-button-danger:hover {
+  background-color: #dc3545;
+}
+
+.modal-settings-content > *:last-child {
+  margin-bottom: 0;
+}

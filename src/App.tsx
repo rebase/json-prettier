@@ -39,6 +39,18 @@ interface ModalProps {
   theme: string;
 }
 
+interface ConfirmModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  theme: string;
+  title: string;
+  message: string;
+  confirmText: string;
+  cancelText: string;
+  fontSize: number;
+}
+
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, theme }) => {
   if (!isOpen) return null;
   const isDarkTheme = darkThemes.includes(theme);
@@ -61,6 +73,59 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, theme }) => {
   );
 };
 
+const ConfirmModal: React.FC<ConfirmModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  theme,
+  title,
+  message,
+  confirmText,
+  cancelText,
+  fontSize,
+}) => {
+  if (!isOpen) return null;
+  const isDarkTheme = darkThemes.includes(theme);
+
+  return (
+    <div
+      className={`modal-overlay ${isDarkTheme ? 'dark-theme' : ''}`}
+      onClick={onClose}
+      style={{ zIndex: 1100 }}>
+      <div
+        className={`modal-content ${isDarkTheme ? 'dark-theme' : ''}`}
+        onClick={e => e.stopPropagation()}
+        style={{ maxWidth: '25em' }}>
+        <button
+          className={`modal-close-button ${isDarkTheme ? 'dark-theme' : ''}`}
+          onClick={onClose}>
+          &times;
+        </button>
+        <div
+          className="modal-settings-content"
+          style={{ fontSize: `${fontSize}px` }}>
+          <h2>{title}</h2>
+          <div className="reset-confirmation">
+            <p className="reset-confirmation-text">{message}</p>
+            <div className="reset-button-group">
+              <button
+                onClick={onConfirm}
+                className="reset-button reset-button-danger">
+                {confirmText}
+              </button>
+              <button
+                onClick={onClose}
+                className="reset-button reset-button-secondary">
+                {cancelText}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [formattedString, setFormattedString] = useState('');
   const [isError, setIsError] = useState(false);
@@ -74,7 +139,15 @@ function App() {
   const [isCopied, setIsCopied] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const editorRef = useRef<any>(null);
+
+  const getSystemTheme = () => {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'vs-dark';
+    }
+    return 'vs-light';
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -82,7 +155,15 @@ function App() {
         const appData = (await invoke('load_app_data')) as AppData;
 
         setFontSize(appData.settings.font_size);
-        setTheme(appData.settings.theme);
+
+        const savedTheme = appData.settings.theme;
+        if (savedTheme && savedTheme !== '') {
+          setTheme(savedTheme);
+        } else {
+          const systemTheme = getSystemTheme();
+          setTheme(systemTheme);
+        }
+
         setIndentType(appData.settings.indent_type as 'space' | 'tab');
         setIndentWidth(appData.settings.indent_width);
 
@@ -96,6 +177,8 @@ function App() {
         }
       } catch (error) {
         console.error('Failed to load data:', error);
+        const systemTheme = getSystemTheme();
+        setTheme(systemTheme);
       }
     };
 
@@ -187,6 +270,27 @@ function App() {
 
   const openAboutModal = () => setIsAboutModalOpen(true);
   const closeAboutModal = () => setIsAboutModalOpen(false);
+  const handleResetSettings = async () => {
+    try {
+      await invoke('reset_app_data');
+      const systemTheme = getSystemTheme();
+
+      setFontSize(14);
+      setTheme(systemTheme);
+      setIndentType('space');
+      setIndentWidth(4);
+      setIsError(false);
+
+      if (inputString.trim() !== '') {
+        formatString(inputString, { indentType: 'space', indentWidth: 4 });
+      }
+
+      setIsResetConfirmOpen(false);
+      closeModal();
+    } catch (error) {
+      console.error('Failed to reset settings:', error);
+    }
+  };
 
   const handleCopy = async () => {
     try {
@@ -299,7 +403,9 @@ function App() {
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        if (isAboutModalOpen) {
+        if (isResetConfirmOpen) {
+          setIsResetConfirmOpen(false);
+        } else if (isAboutModalOpen) {
           closeAboutModal();
         } else if (isModalOpen) {
           closeModal();
@@ -310,7 +416,7 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
-  }, [isModalOpen, isAboutModalOpen]);
+  }, [isModalOpen, isAboutModalOpen, isResetConfirmOpen]);
 
   const isDarkTheme = darkThemes.includes(theme);
 
@@ -581,7 +687,7 @@ function App() {
         <div
           className="modal-settings-content"
           style={{ fontSize: `${fontSize}px` }}>
-          <h2>Editor Settings</h2>
+          <h2>Settings</h2>
           <div className="setting-item">
             <label htmlFor="font-size-select">Font Size</label>
             <select
@@ -636,8 +742,28 @@ function App() {
               </select>
             </div>
           )}
+
+          <div className="reset-settings-section">
+            <button
+              onClick={() => setIsResetConfirmOpen(true)}
+              className="reset-button reset-button-danger reset-button-full">
+              Reset All Settings
+            </button>
+          </div>
         </div>
       </Modal>
+
+      <ConfirmModal
+        isOpen={isResetConfirmOpen}
+        onClose={() => setIsResetConfirmOpen(false)}
+        onConfirm={handleResetSettings}
+        theme={theme}
+        title="Reset Settings"
+        message="This will reset font size, theme, and formatting settings to defaults."
+        confirmText="Yes, Reset Settings"
+        cancelText="Cancel"
+        fontSize={fontSize}
+      />
     </main>
   );
 }

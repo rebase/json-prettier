@@ -17,8 +17,8 @@ impl Default for AppSettings {
     fn default() -> Self {
         Self {
             indent_type: "space".to_string(),
-            indent_width: 2,
-            theme: "vs-dark".to_string(),
+            indent_width: 4,
+            theme: "".to_string(),
             font_size: 14,
         }
     }
@@ -104,6 +104,24 @@ async fn write_file(path: String, content: String) -> Result<(), String> {
     std::fs::write(&path, content).map_err(|e| format!("Failed to write file '{}': {}", path, e))
 }
 
+#[tauri::command]
+async fn reset_app_data(app: tauri::AppHandle) -> Result<(), String> {
+    let store = app
+        .store_builder("app_data.json")
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    let default_data = AppData::default();
+    store.set(
+        "app_data",
+        serde_json::to_value(&default_data).map_err(|e| e.to_string())?,
+    );
+
+    store.save().map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -115,7 +133,8 @@ pub fn run() {
             save_app_data,
             load_app_data,
             read_file,
-            write_file
+            write_file,
+            reset_app_data
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
