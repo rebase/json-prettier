@@ -13,18 +13,15 @@
   <table>
     <tr>
       <td width="33%" align="center">
-        <img src="docs/images/main-interface.png" alt="Main Interface" width="100%" style="margin-bottom: 5px;">
-        <br>
+        <img src="docs/images/main-interface.png" alt="Main Interface" width="100%">
         <strong>Main Interface</strong>
       </td>
       <td width="33%" align="center">
-        <img src="docs/images/dark-theme.png" alt="Dark Theme" width="100%" style="margin-bottom: 5px;">
-        <br>
+        <img src="docs/images/dark-theme.png" alt="Dark Theme" width="100%">
         <strong>Dark Theme</strong>
       </td>
       <td width="33%" align="center">
-        <img src="docs/images/settings-panel.png" alt="Settings Panel" width="100%" style="margin-bottom: 5px;">
-        <br>
+        <img src="docs/images/settings-panel.png" alt="Settings Panel" width="100%">
         <strong>Settings Panel</strong>
       </td>
     </tr>
@@ -37,31 +34,37 @@
   <table>
     <tr>
       <td align="center" width="33%">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="macOS" width="40" height="40">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="macOS" width="60" height="60">
         <br>
         <strong>macOS</strong>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_aarch64.dmg">Apple Silicon (M1/M2)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_aarch64.dmg">DMG (Apple Silicon)</a>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64.dmg">Intel</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64.dmg">DMG (Intel)</a>
+        <br>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_aarch64.app.tar.gz">App Bundle (Apple Silicon)</a>
+        <br>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_x64.app.tar.gz">App Bundle (Intel)</a>
       </td>
       <td align="center" width="33%">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="Windows" width="40" height="40">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="Windows" width="60" height="60">
         <br>
         <strong>Windows</strong>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64-setup.exe">Setup (.exe)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64-setup.exe">Installer (.exe, x64)</a>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64.msi">MSI Installer</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64_en-US.msi">MSI Installer (x64, en-US)</a>
       </td>
       <td align="center" width="33%">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux" width="40" height="40">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux" width="60" height="60">
         <br>
         <strong>Linux</strong>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.AppImage">AppImage</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.AppImage">AppImage (amd64)</a>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.deb">Debian (.deb)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.deb">Debian Package (.deb, amd64)</a>
+        <br>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier-0.1.1-1.x86_64.rpm">RPM Package (x86_64)</a>
       </td>
     </tr>
   </table>

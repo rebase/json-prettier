@@ -56,8 +56,8 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'JSON Prettier v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
-          releaseBody: 'See the assets to download and install this version.'
+          releaseName: 'v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          releaseBody: ''
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
