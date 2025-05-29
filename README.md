@@ -3,7 +3,7 @@
 <div align="center">
   <img src="src-tauri/icons/icon.png" alt="JSON Prettier Logo" width="128" height="128">
   
-  [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/rebase/json-prettier)
+  [![Version](https://img.shields.io/badge/version-0.1.1-blue.svg)](https://github.com/rebase/json-prettier)
   [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 </div>
 
@@ -41,27 +41,27 @@
         <br>
         <strong>macOS</strong>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.0_aarch64.dmg">Apple Silicon (M1/M2)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_aarch64.dmg">Apple Silicon (M1/M2)</a>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.0_x64.dmg">Intel</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64.dmg">Intel</a>
       </td>
       <td align="center" width="33%">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="Windows" width="40" height="40">
         <br>
         <strong>Windows</strong>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.0_x64-setup.exe">Setup (.exe)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64-setup.exe">Setup (.exe)</a>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.0_x64.msi">MSI Installer</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_x64.msi">MSI Installer</a>
       </td>
       <td align="center" width="33%">
         <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Linux" width="40" height="40">
         <br>
         <strong>Linux</strong>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.0_amd64.AppImage">AppImage</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.AppImage">AppImage</a>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.0_amd64.deb">Debian (.deb)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.deb">Debian (.deb)</a>
       </td>
     </tr>
   </table>

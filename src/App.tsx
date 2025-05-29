@@ -695,7 +695,7 @@ function App() {
           <div className="about-content">
             <div className="app-info">
               <h3>JSON Prettier</h3>
-              <p className="version">Version 0.1.0</p>
+              <p className="version">Version 0.1.1</p>
               <p className="description compact">
                 Transform messy JSON into beautifully organized format with customizable styling
                 options.
