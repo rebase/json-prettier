@@ -6,21 +6,28 @@
 
 When you first download and run JSON Prettier on macOS, you may see a security warning:
 
-> "Apple could not verify JSON Prettier.app is free of malware..."
+> "JSON Prettier.app is damaged and can't be opened. You should move it to the Trash."
 
 This is normal for apps that aren't signed with an Apple Developer Certificate. To run the app:
 
-**Method 1: System Settings**
+**Method 1: System Settings (may not work on latest macOS)**
 
 1. Go to **System Settings → Privacy & Security**
 2. Find "JSON Prettier.app was blocked" message
 3. Click **"Open Anyway"**
 
-**Method 2: Right-click**
+**Method 2: Terminal (Recommended - works for all versions)**
 
-1. Right-click on the app
-2. Select **"Open"**
-3. Click **"Open"** in the dialog
+1. Open **Terminal**
+2. Run the following command (replace path with actual app location):
+
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/JSON Prettier.app"
+```
+
+3. Enter your password when prompted
+
+**Note**: For Apple Silicon Macs with arm64 version, Method 2 (Terminal) is currently the only reliable way to run the app.
 
 This only needs to be done once. After that, the app will run normally.
 

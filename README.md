@@ -60,9 +60,9 @@
         <br>
         <strong>Linux</strong>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.AppImage">AppImage (amd64)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_amd64.AppImage">AppImage (amd64)</a>
         <br>
-        <a href="https://github.com/rebase/json-prettier/releases/latest/download/json-prettier_0.1.1_amd64.deb">Debian Package (.deb, amd64)</a>
+        <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier_0.1.1_amd64.deb">Debian Package (.deb, amd64)</a>
         <br>
         <a href="https://github.com/rebase/json-prettier/releases/latest/download/JSON.Prettier-0.1.1-1.x86_64.rpm">RPM Package (x86_64)</a>
       </td>
@@ -70,8 +70,8 @@
   </table>
 </div>
 
-> **macOS Users**: You may see an "untrusted developer" warning on first launch.
-> Right-click the app and select "Open" to bypass this. See our [Installation Guide](INSTALLATION.md) for details.
+> **macOS Users**: You may see security warnings like "untrusted developer" or "app is damaged" on first launch.
+> Try right-clicking the app and selecting "Open" first. If that doesn't work, see our [Installation Guide](INSTALLATION.md) for the terminal solution.
 
 ---
 
