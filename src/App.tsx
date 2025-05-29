@@ -207,7 +207,54 @@ function App() {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(50);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const editorRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleMouseDown = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setIsResizing(true);
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!container) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const newWidth = isMobile
+        ? Math.min(Math.max(((e.clientY - containerRect.top) / containerRect.height) * 100, 15), 85)
+        : Math.min(
+            Math.max(((e.clientX - containerRect.left) / containerRect.width) * 100, 15),
+            85,
+          );
+
+      setLeftPanelWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = isMobile ? 'row-resize' : 'col-resize';
+    document.body.style.userSelect = 'none';
+  };
 
   const getSystemTheme = () => {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -587,8 +634,21 @@ function App() {
         </div>
 
         <div className="content-area">
-          <div className="container">
-            <div className="editor-section">
+          <div
+            className="container"
+            ref={containerRef}
+            style={
+              {
+                '--left-panel-height': `${leftPanelWidth}%`,
+                '--right-panel-height': `${100 - leftPanelWidth}%`,
+              } as React.CSSProperties
+            }>
+            <div
+              className="editor-section"
+              style={{
+                width: !isMobile ? `${leftPanelWidth}%` : '100%',
+                height: isMobile ? `${leftPanelWidth}%` : '100%',
+              }}>
               <div className={getThemeClass('editor-header', theme)}>
                 <div className="editor-actions-left">
                   <button
@@ -645,7 +705,18 @@ function App() {
                 />
               </div>
             </div>
-            <div className="editor-section">
+
+            <div
+              className={getThemeClass('splitter', theme, isResizing ? 'resizing' : '')}
+              onMouseDown={handleMouseDown}
+            />
+
+            <div
+              className="editor-section"
+              style={{
+                width: !isMobile ? `${100 - leftPanelWidth}%` : '100%',
+                height: isMobile ? `${100 - leftPanelWidth}%` : '100%',
+              }}>
               <div className={getThemeClass('editor-header', theme)}>
                 <div className="editor-actions-left">
                   <button
