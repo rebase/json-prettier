@@ -135,11 +135,10 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 const getCommonEditorOptions = (fontSize: number) => ({
   minimap: { enabled: false },
   fontSize: fontSize,
-  wordWrap: 'on' as const,
+  wordWrap: 'off' as const,
   automaticLayout: true,
   scrollBeyondLastLine: false,
   renderLineHighlight: 'none' as const,
-  lineNumbers: 'off' as const,
   lineNumbersMinChars: 0,
   stickyScroll: { enabled: false },
   hover: { enabled: false },
@@ -701,6 +700,7 @@ function App() {
                     ...getCommonEditorOptions(fontSize),
                     folding: false,
                     showFoldingControls: 'never',
+                    lineNumbers: 'off',
                   }}
                 />
               </div>
