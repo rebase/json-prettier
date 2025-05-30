@@ -13,6 +13,7 @@ pub struct AppSettings {
     pub indent_width: usize,
     pub theme: String,
     pub font_size: u32,
+    pub editor_panel_width: f64,
 }
 
 impl Default for AppSettings {
@@ -22,6 +23,7 @@ impl Default for AppSettings {
             indent_width: 4,
             theme: "".to_string(),
             font_size: 14,
+            editor_panel_width: 50.0,
         }
     }
 }

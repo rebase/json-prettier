@@ -37,6 +37,7 @@ interface AppSettings {
   indent_width: number;
   theme: string;
   font_size: number;
+  editor_panel_width: number;
 }
 
 interface AppData {
@@ -279,6 +280,7 @@ function App() {
 
         setIndentType(appData.settings.indent_type as 'space' | 'tab');
         setIndentWidth(appData.settings.indent_width);
+        setLeftPanelWidth(appData.settings.editor_panel_width);
 
         setInputString(appData.last_json_input);
 
@@ -322,6 +324,7 @@ function App() {
               indent_width: indentWidth,
               theme: theme,
               font_size: fontSize,
+              editor_panel_width: leftPanelWidth,
             },
           },
         });
@@ -332,7 +335,7 @@ function App() {
 
     const timeoutId = setTimeout(saveData, TIMING.SAVE_DEBOUNCE_DELAY);
     return () => clearTimeout(timeoutId);
-  }, [inputString, fontSize, theme, indentType, indentWidth]);
+  }, [inputString, fontSize, theme, indentType, indentWidth, leftPanelWidth]);
 
   const formatString = async (
     textValue?: string,
@@ -407,6 +410,7 @@ function App() {
       setTheme(systemTheme);
       setIndentType(DEFAULT_SETTINGS.indentType);
       setIndentWidth(DEFAULT_SETTINGS.indentWidth);
+      setLeftPanelWidth(50);
       setIsError(false);
 
       if (inputString.trim() !== '') {
