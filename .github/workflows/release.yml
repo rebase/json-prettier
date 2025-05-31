@@ -57,7 +57,27 @@ jobs:
         with:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
           releaseName: 'v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
-          releaseBody: ''
+          releaseBody: |
+            ## Download
+
+            Choose the right file for your operating system:
+
+            ### macOS
+            - **DMG (Apple Silicon)** - For Macs with Apple processors
+            - **DMG (Intel)** - For Macs with Intel processors
+            - **App Bundle** - Alternative installation format
+
+            ### Windows
+            - **Installer (.exe)** - Standard Windows installer for 64-bit systems
+            - **MSI Installer** - Enterprise-friendly installation format
+
+            ### Linux
+            - **AppImage** - Universal Linux package that runs on most distributions
+            - **Debian Package (.deb)** - For Ubuntu, Debian and derivatives
+            - **RPM Package** - For Red Hat, CentOS, Fedora and derivatives
+
+            > **⚠️ IMPORTANT FOR macOS USERS**: macOS will show security warnings ("untrusted developer" or "app is damaged") on first launch.
+            > Right-click the app and select "Open" to bypass this. For persistent issues, check our [Installation Guide](https://github.com/rebase/json-prettier/blob/main/INSTALLATION.md).
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

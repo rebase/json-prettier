@@ -10,25 +10,10 @@
 ---
 
 <div align="center">
-  <table>
-    <tr>
-      <td width="33%" align="center">
-        <img src="docs/images/main-interface.png" alt="Main Interface" width="100%">
-        <strong>Main Interface</strong>
-      </td>
-      <td width="33%" align="center">
-        <img src="docs/images/dark-theme.png" alt="Dark Theme" width="100%">
-        <strong>Dark Theme</strong>
-      </td>
-      <td width="33%" align="center">
-        <img src="docs/images/settings-panel.png" alt="Settings Panel" width="100%">
-        <strong>Settings Panel</strong>
-      </td>
-    </tr>
-  </table>
+  <img src="docs/images/main-interface.png" alt="Main Interface" width="75%">
 </div>
 
-## 📥 Download
+## Download
 
 <div align="center">
   <table>
@@ -70,36 +55,34 @@
   </table>
 </div>
 
-> **macOS Users**: You may see security warnings like "untrusted developer" or "app is damaged" on first launch.
-> Try right-clicking the app and selecting "Open" first. If that doesn't work, see our [Installation Guide](INSTALLATION.md) for the terminal solution.
+> **IMPORTANT FOR macOS USERS**: macOS will show security warnings ("untrusted developer" or "app is damaged") on first launch.
+> Right-click the app and select "Open" to bypass this. For persistent issues, check our [Installation Guide](INSTALLATION.md).
 
 ---
 
-## 📝 What is JSON Prettier?
+## What is JSON Prettier?
 
 JSON Prettier is a simple desktop app that makes messy JSON data look clean and organized. Whether you're a developer, data analyst, or just someone who works with JSON files, this app will help you format and read JSON data easily.
 
-## ✨ Features
+## Key Features
 
-- 📂 **Open JSON files** - Load JSON from your computer
-- 💾 **Save formatted JSON** - Export cleaned up data
-- 🔄 **Auto-save settings** - Remembers your preferences
-- 🌙 **Dark/Light themes** - Choose your preferred look
-- 📋 **Copy/Paste support** - Quick text operations
-- 🎨 **Syntax highlighting** - Easy to read colored JSON
-- ⚡ **Fast formatting** - Instant JSON beautification
+- Open and save JSON files from your computer
+- Auto-save your formatting preferences
+- Dark and light themes available
+- Copy/paste support with keyboard shortcuts
+- Syntax highlighting for better readability
+- Instant JSON formatting and validation
 
-## 🐛 Something Not Working?
+## Having Issues?
 
-Found a problem? Let us know! Go to our [Issues page](https://github.com/rebase/json-prettier/issues) and tell us:
+If something's not working right, [create an issue](https://github.com/rebase/json-prettier/issues) and include:
 
-- What computer you're using (Mac, Windows, Linux)
-- What version of the app you have
+- Your operating system and version
 - What you were trying to do
-- What happened vs what you expected
-- A screenshot if possible
+- What actually happened
+- Screenshots if helpful
 
-## 🛠️ For Developers
+## For Developers
 
 Want to contribute or build from source? Check out our [Development Guide](DEVELOPMENT.md)
 
