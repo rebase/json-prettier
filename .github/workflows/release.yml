@@ -63,18 +63,19 @@ jobs:
             Choose the right file for your operating system:
 
             ### macOS
-            - **DMG (Apple Silicon)** - For Macs with Apple processors
-            - **DMG (Intel)** - For Macs with Intel processors
-            - **App Bundle** - Alternative installation format
+            - **JSON.Prettier___VERSION___aarch64.dmg** - Apple Silicon
+            - **JSON.Prettier___VERSION___x64.dmg** - Intel
+            - **JSON.Prettier_aarch64.app.tar.gz** - App Bundle for Apple Silicon
+            - **JSON.Prettier_x64.app.tar.gz** - App Bundle for Intel
 
             ### Windows
-            - **Installer (.exe)** - Standard Windows installer for 64-bit systems
-            - **MSI Installer** - Enterprise-friendly installation format
+            - **JSON.Prettier___VERSION___x64-setup.exe** - Standard Windows installer for 64-bit systems
+            - **JSON.Prettier___VERSION___x64_en-US.msi** - Enterprise-friendly installation format
 
             ### Linux
-            - **AppImage** - Universal Linux package that runs on most distributions
-            - **Debian Package (.deb)** - For Ubuntu, Debian and derivatives
-            - **RPM Package** - For Red Hat, CentOS, Fedora and derivatives
+            - **JSON.Prettier___VERSION___amd64.AppImage** - Universal Linux package that runs on most distributions
+            - **JSON.Prettier___VERSION___amd64.deb** - For Ubuntu, Debian and derivatives
+            - **JSON.Prettier-__VERSION__-1.x86_64.rpm** - For Red Hat, CentOS, Fedora and derivatives
 
             > **⚠️ IMPORTANT FOR macOS USERS**: macOS will show security warnings ("untrusted developer" or "app is damaged") on first launch.
             > Right-click the app and select "Open" to bypass this. For persistent issues, check our [Installation Guide](https://github.com/rebase/json-prettier/blob/main/INSTALLATION.md).
