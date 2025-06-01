@@ -1,6 +1,6 @@
 [package]
 name = "json-prettier"
-version = "0.1.2"
+version = "0.1.3"
 description = "A simple desktop app that makes messy JSON data look clean and organized"
 authors = ["rebase"]
 edition = "2021"

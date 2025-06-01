@@ -135,7 +135,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose, theme }
         <div className="about-content">
           <div className="app-info">
             <h3>JSON Prettier</h3>
-            <p className="version">Version 0.1.2</p>
+            <p className="version">Version 0.1.3</p>
             <p className="description compact">
               Transform messy JSON into beautifully organized format with customizable styling
               options.
